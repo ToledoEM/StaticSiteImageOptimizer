@@ -1,5 +1,8 @@
 project:
   type: website
+  output-dir: _site
+  render: 
+    - README.md
 
 site-url: "https://toledoem.github.io/StaticSiteImageOptimizer/"
 

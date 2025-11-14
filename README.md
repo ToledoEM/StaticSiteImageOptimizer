@@ -125,6 +125,14 @@ uv run test_conversion.py
 
 This will convert images in `test/img/` and update references in `test/index.html` without deleting originals.
 
+## Render Site
+
+To render the documentation site using Quarto:
+
+```bash
+quarto render
+```
+
 ## License
 
 This project is licensed under the MIT License - see the `LICENSE` file for details.
