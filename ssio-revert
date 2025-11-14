@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Safety checks
+if [ "$EUID" -eq 0 ]; then
+    echo "Error: Do not run this script as root or with sudo"
+    exit 1
+fi
+
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT_PATH" ]; do
+    SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+    [[ $SCRIPT_PATH != /* ]] && SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_PATH"
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+VENV_DIR="$SCRIPT_DIR/.venv"
+
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Error: Virtual environment not found. Run ssio first to set it up."
+    exit 1
+fi
+
+source "$VENV_DIR/bin/activate"
+export PYTHONPATH="$SCRIPT_DIR/src:$PYTHONPATH"
+python -m static_site_image_optimizer.revert "$@"
