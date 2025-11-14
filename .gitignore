@@ -52,3 +52,4 @@ test/index.html.bak
 
 #svg
 *.svg
+.quarto
