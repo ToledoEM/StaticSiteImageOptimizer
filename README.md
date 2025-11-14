@@ -124,3 +124,7 @@ uv run test_conversion.py
 ```
 
 This will convert images in `test/img/` and update references in `test/index.html` without deleting originals.
+
+## License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
