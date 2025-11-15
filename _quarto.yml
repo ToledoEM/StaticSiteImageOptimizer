@@ -1,7 +1,7 @@
 project:
   type: website
   output-dir: _site
-  render: 
+  render:
     - README.md
 
 site-url: "https://toledoem.github.io/StaticSiteImageOptimizer/"
@@ -16,7 +16,11 @@ website:
 format:
   html:
     theme:
-      light: flatly   # Bootswatch theme (Bootstrap look)
+      light: flatly # Bootswatch theme (Bootstrap look)
+    includes:
+      in_header: |
+        <script data-goatcounter="https://etoledo.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
     toc: true
     toc-location: left
     toc-depth: 4
