@@ -47,10 +47,7 @@ test/img/*.tiff
 test/img/*.webp
 test/index.html.bak
 
-# Logs
-*.log
-
-# sv
+#svg
 *.svg
 .quarto
 /.quarto/
