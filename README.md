@@ -1,8 +1,26 @@
 # Static Site Image Optimizer (ssio)
 
+[![CI](https://github.com/ToledoEM/StaticSiteImageOptimizer/actions/workflows/ci.yml/badge.svg)](https://github.com/ToledoEM/StaticSiteImageOptimizer/actions/workflows/ci.yml)
+[![Docs site](https://github.com/ToledoEM/StaticSiteImageOptimizer/actions/workflows/docs.yml/badge.svg)](https://toledoem.github.io/StaticSiteImageOptimizer/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python >=3.9](https://img.shields.io/badge/python-%3E%3D3.9-blue.svg)](pyproject.toml)
+[![uv](https://img.shields.io/badge/uv-managed-de5fe9.svg)](https://docs.astral.sh/uv/)
+
 ![ssio logo](img/logo_SSIO.png)
 
 Recursively converts images in a directory to WebP and updates references in HTML/CSS/JS files, quickly and safely
+
+Results at `--quality 85`:
+
+| Image | Full-resolution source | Resized original | WebP | Saved |
+| --- | ---: | ---: | ---: | ---: |
+| [Eye of the Bird](https://commons.wikimedia.org/wiki/File:Arara-vermelha_-_PARNA_da_Serra_da_Capivara_-_LeonardoRamos(001).jpg) (JPG, ProPhoto RGB) | 6.63 MB | 0.50 MB | 0.21 MB | 58.1% |
+| [Raya de arrecife](https://commons.wikimedia.org/wiki/File:Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg) (JPG, sRGB) | 8.76 MB | 0.87 MB | 0.44 MB | 49.9% |
+| [Jupiter](https://commons.wikimedia.org/wiki/File:Jupiter_accurate_colour.png) (PNG) | 2.58 MB | 1.18 MB | 0.06 MB | 94.6% |
+| [Val Montanaia](https://commons.wikimedia.org/wiki/File:Val_Montanaia.jpg) (JPG, Adobe RGB) | 38.04 MB | 0.63 MB | 0.36 MB | 42.9% |
+| **Total** | **56.01 MB** | **3.18 MB** | **1.07 MB** | **66.5%** |
+
+Saved compares the resized original with its WebP. Sizes are in MiB (1 MB = 1,048,576 bytes), measured with ssio 0.1.0 and Pillow 12. Wide-gamut originals (Adobe RGB, ProPhoto) are colour-converted to sRGB, so the WebP files look the same as the originals in every browser.
 
 ## Installation
 
@@ -144,26 +162,6 @@ cd test
 ```
 
 `download_images.sh` fetches the full-resolution files from Wikimedia Commons and resizes them to web size (max 1600 px on the long side), keeping their colour profiles. ssio then converts every image in `test/img/`, rewrites the references in `test/index.html` and saves the original page as `test/index.html.bak`. Restore it with `../ssio-revert . --remove-webp`.
-
-Results at `--quality 85`:
-
-| Image | Full-resolution source | Resized original | WebP | Saved |
-| --- | ---: | ---: | ---: | ---: |
-| [Eye of the Bird](https://commons.wikimedia.org/wiki/File:Arara-vermelha_-_PARNA_da_Serra_da_Capivara_-_LeonardoRamos(001).jpg) (JPG, ProPhoto RGB) | 6.63 MB | 0.50 MB | 0.21 MB | 58.1% |
-| [Raya de arrecife](https://commons.wikimedia.org/wiki/File:Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg) (JPG, sRGB) | 8.76 MB | 0.87 MB | 0.44 MB | 49.9% |
-| [Jupiter](https://commons.wikimedia.org/wiki/File:Jupiter_accurate_colour.png) (PNG) | 2.58 MB | 1.18 MB | 0.06 MB | 94.6% |
-| [Val Montanaia](https://commons.wikimedia.org/wiki/File:Val_Montanaia.jpg) (JPG, Adobe RGB) | 38.04 MB | 0.63 MB | 0.36 MB | 42.9% |
-| **Total** | **56.01 MB** | **3.18 MB** | **1.07 MB** | **66.5%** |
-
-Saved compares the resized original with its WebP. Sizes are in MiB (1 MB = 1,048,576 bytes), measured with ssio 0.1.0 and Pillow 12. Wide-gamut originals (Adobe RGB, ProPhoto) are colour-converted to sRGB, so the WebP files look the same as the originals in every browser.
-
-## Render Site
-
-To render the documentation site using Quarto:
-
-```bash
-quarto render
-```
 
 ## License
 
