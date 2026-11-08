@@ -1,8 +1,9 @@
+import io
 import logging
 import os
 from collections.abc import Iterable
 
-from PIL import Image
+from PIL import Image, ImageCms
 
 logger = logging.getLogger("ssio.converter")
 
@@ -20,10 +21,57 @@ def _find_images(root: str, ext_whitelist: Iterable[str]) -> list[str]:
     return images
 
 
+_SRGB = ImageCms.createProfile("sRGB")
+_SRGB_ICC = ImageCms.ImageCmsProfile(_SRGB).tobytes()
+
+
+def _to_srgb(im: Image.Image) -> Image.Image:
+    """Return an RGB/RGBA image whose pixels are in sRGB.
+
+    Wide-gamut (Adobe RGB, ProPhoto, Display P3) and CMYK images are
+    colour-converted using their embedded ICC profile. Dropping the profile
+    instead makes browsers read the values as sRGB, which desaturates them.
+    """
+    has_alpha = im.mode in ("RGBA", "LA", "PA") or (
+        im.mode == "P" and "transparency" in im.info
+    )
+    target = "RGBA" if has_alpha else "RGB"
+
+    # 16-bit and 32-bit greyscale: scale to 8-bit first, a plain convert clips to white.
+    if im.mode.startswith("I;16") or im.mode == "I":
+        im = im.convert("I").point(lambda v: v * (1 / 256)).convert("L")
+    elif im.mode == "F":
+        im = im.point(lambda v: v * 255).convert("L")
+
+    icc = im.info.get("icc_profile")
+    if icc:
+        try:
+            src_profile = ImageCms.ImageCmsProfile(io.BytesIO(icc))
+            if im.mode not in ("RGB", "RGBA", "CMYK", "L"):
+                im = im.convert(target)
+            out_mode = "RGBA" if im.mode == "RGBA" else "RGB"
+            return ImageCms.profileToProfile(
+                im,
+                src_profile,
+                _SRGB,
+                renderingIntent=ImageCms.Intent.PERCEPTUAL,
+                outputMode=out_mode,
+            )
+        except (ImageCms.PyCMSError, OSError, ValueError) as e:
+            logger.warning("Could not apply ICC profile, assuming sRGB: %s", e)
+
+    return im if im.mode == target else im.convert(target)
+
+
 def _convert_with_pillow(src: str, dst: str, quality: int) -> bool:
     try:
         with Image.open(src) as im:
-            im.save(dst, "WEBP", quality=quality)
+            exif = im.info.get("exif")
+            out = _to_srgb(im)
+            extra = {"icc_profile": _SRGB_ICC}
+            if exif:
+                extra["exif"] = exif
+            out.save(dst, "WEBP", quality=quality, **extra)
         return True
     except OSError as e:
         logger.debug("Pillow conversion failed for %s: %s", src, e)
