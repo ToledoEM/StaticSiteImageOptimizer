@@ -13,13 +13,10 @@ while [ -L "$SCRIPT_PATH" ]; do
     [[ $SCRIPT_PATH != /* ]] && SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_PATH"
 done
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
-VENV_DIR="$SCRIPT_DIR/.venv"
 
-if [ ! -d "$VENV_DIR" ]; then
-    echo "Error: Virtual environment not found. Run ssio first to set it up."
+if ! command -v uv &> /dev/null; then
+    echo "Error: uv is required. Install: https://docs.astral.sh/uv/"
     exit 1
 fi
 
-source "$VENV_DIR/bin/activate"
-export PYTHONPATH="$SCRIPT_DIR/src:$PYTHONPATH"
-python -m static_site_image_optimizer.revert "$@"
+exec uv run --quiet --project "$SCRIPT_DIR" python -m static_site_image_optimizer.revert "$@"
