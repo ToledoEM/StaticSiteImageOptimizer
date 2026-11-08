@@ -12,11 +12,12 @@ Download test images:
 
 ## Test Images
 
-The test uses the following images from Wikimedia Commons:
+The test uses the following images from Wikimedia Commons, resized to max 1600 px on the long side by `download_images.sh`:
 
-- [Eye of the Bird](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Eye_of_the_Bird.jpg/3240px-Eye_of_the_Bird.jpg)
-- [Raya de arrecife](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Raya_de_arrecife_%28Taeniura_lymma%29%2C_mar_Rojo%2C_Egipto%2C_2023-04-14%2C_DD_64.jpg/3240px-Raya_de_arrecife_%28Taeniura_lymma%29%2C_mar_Rojo%2C_Egipto%2C_2023-04-14%2C_DD_64.jpg)
-- [Val Montanaia](https://upload.wikimedia.org/wikipedia/commons/9/90/Val_Montanaia.jpg)
+- [Eye of the Bird](https://commons.wikimedia.org/wiki/File:Arara-vermelha_-_PARNA_da_Serra_da_Capivara_-_LeonardoRamos(001).jpg) (4244 × 2829 px, 6.63 MB) saved as `img/Eye_of_the_Bird.jpg`
+- [Raya de arrecife](https://commons.wikimedia.org/wiki/File:Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg) (7465 × 4977 px, 8.76 MB) saved as `img/Raya_de_arrecife.jpg`
+- [Jupiter](https://commons.wikimedia.org/wiki/File:Jupiter_accurate_colour.png) (2232 × 2160 px, 2.58 MB) saved as `img/Jupiter.png`
+- [Val Montanaia](https://commons.wikimedia.org/wiki/File:Val_Montanaia.jpg) (9557 × 6336 px, 38.04 MB) saved as `img/Val_Montanaia.jpg`
 
 ## Running Tests
 
