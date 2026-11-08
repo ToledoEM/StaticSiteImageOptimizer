@@ -3,6 +3,15 @@ project:
   output-dir: _site
   render:
     - README.md
+    - compare.qmd
+  # Demo pages and their images are copied to the site as-is.
+  # CI downloads the images and runs ssio on test/img before rendering.
+  resources:
+    - test/index.html
+    - test/index_compressed.html
+    - test/img/*.jpg
+    - test/img/*.png
+    - test/img/*.webp
 
 site-url: "https://toledoem.github.io/StaticSiteImageOptimizer/"
 
@@ -10,6 +19,8 @@ website:
   title: "Static Site Image Optimizer"
   navbar:
     left:
+      - text: "Original vs WebP"
+        href: compare.qmd
       - text: "Repository"
         href: "https://github.com/ToledoEM/StaticSiteImageOptimizer"
 
@@ -25,4 +36,3 @@ format:
     toc-location: left
     toc-depth: 4
     toc-expand: 2
-    css: styles.css

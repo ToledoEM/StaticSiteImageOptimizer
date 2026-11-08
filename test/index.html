@@ -32,7 +32,6 @@
             width: 100%;
             height: auto;
             display: block;
-            cursor: pointer;
         }
         .image-card img:hover {
             opacity: 0.9;
@@ -62,7 +61,7 @@
         .background-test {
             width: 100%;
             height: 300px;
-            background-image: url('img/3240px-Eye_of_the_Bird.jpg');
+            background-image: url('img/Eye_of_the_Bird.jpg');
             background-size: cover;
             background-position: center;
             margin: 20px 0;
@@ -124,9 +123,6 @@
         function initImages() {
             document.querySelectorAll('.image-card img').forEach(function(img) {
                 getImageInfo(img);
-                img.onclick = function() {
-                    window.open(this.src, '_blank');
-                };
             });
         }
     </script>
@@ -134,8 +130,8 @@
 <body>
     <h1>Static Site Image Optimizer Test</h1>
     <div class="stats">
-        <p><strong>Test directory:</strong> /Users/enrique/github/StaticSiteImageOptimizer/test</p>
-        <p>This page contains various image references to test the optimizer. Images are clickable to open full size.</p>
+        <p><strong>Test directory:</strong> test/</p>
+        <p>This page contains various image references to test the optimizer.</p>
     </div>
     
     <h2>CSS Background Image</h2>
@@ -144,20 +140,20 @@
     <h2>Image Gallery</h2>
     <div class="gallery">
         <div class="image-card">
-            <img src="img/3240px-Eye_of_the_Bird.jpg" alt="Eye of the Bird">
+            <img src="img/Eye_of_the_Bird.jpg" alt="Eye of the Bird">
             <div class="info">
                 <h3>Eye of the Bird</h3>
                 <div class="details">Loading...</div>
-                <div class="path">img/3240px-Eye_of_the_Bird.jpg</div>
+                <div class="path">img/Eye_of_the_Bird.jpg</div>
             </div>
         </div>
         
         <div class="image-card">
-            <img src="img/3240px-Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg" alt="Raya de arrecife">
+            <img src="img/Raya_de_arrecife.jpg" alt="Raya de arrecife">
             <div class="info">
                 <h3>Raya de arrecife</h3>
                 <div class="details">Loading...</div>
-                <div class="path">img/3240px-Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg</div>
+                <div class="path">img/Raya_de_arrecife.jpg</div>
             </div>
         </div>
         
@@ -171,20 +167,20 @@
         </div>
         
         <div class="image-card">
-            <img src="img/Jupiter_accurate_colour.jpg" alt="Jupiter">
+            <img src="img/Jupiter.png" alt="Jupiter">
             <div class="info">
                 <h3>Jupiter</h3>
                 <div class="details">Loading...</div>
-                <div class="path">img/Jupiter_accurate_colour.jpg</div>
+                <div class="path">img/Jupiter.png</div>
             </div>
         </div>
         
         <div class="image-card">
-            <img src="./img/3240px-Eye_of_the_Bird.jpg" alt="Eye of the Bird (relative)">
+            <img src="./img/Eye_of_the_Bird.jpg" alt="Eye of the Bird (relative)">
             <div class="info">
                 <h3>Eye of the Bird (relative path)</h3>
                 <div class="details">Loading...</div>
-                <div class="path">./img/3240px-Eye_of_the_Bird.jpg</div>
+                <div class="path">./img/Eye_of_the_Bird.jpg</div>
             </div>
         </div>
     </div>

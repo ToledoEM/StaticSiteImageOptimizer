@@ -1,0 +1,118 @@
+---
+title: "Original vs WebP"
+toc: false
+page-layout: full
+---
+
+Each row shows a web-sized original (max 1600 px, colour profile kept) next to the WebP that `ssio --quality 85` produced. Sizes and dimensions are read from the files the browser downloads. The full-resolution source of each image is linked from Wikimedia Commons.
+
+```{=html}
+<style>
+  .cmp-row { margin: 2rem 0; }
+  .cmp-row h3 { margin-bottom: .25rem; }
+  .cmp-source { font-size: .9rem; margin-bottom: .5rem; color: #555; }
+  .cmp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 700px) { .cmp-pair { grid-template-columns: 1fr; } }
+  .cmp-pair figure { margin: 0; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #fff; }
+  .cmp-pair img { width: 100%; height: auto; display: block; }
+  .cmp-pair figcaption { padding: .5rem .75rem; font-size: .9rem; }
+  .cmp-pair .sz { display: block; font-size: 1.4rem; font-weight: 700; }
+  .cmp-pair .meta { color: #555; }
+  .cmp-saved { margin-top: .5rem; font-weight: 600; color: #18794e; }
+  #cmp-total { font-size: 1.1rem; font-weight: 600; }
+</style>
+
+<p id="cmp-total">Total: loading…</p>
+<div id="cmp"></div>
+
+<script>
+(function () {
+  // [title, local file, Commons page, full-resolution dimensions, full-resolution bytes]
+  var images = [
+    ["Eye of the Bird", "Eye_of_the_Bird.jpg",
+     "https://commons.wikimedia.org/wiki/File:Arara-vermelha_-_PARNA_da_Serra_da_Capivara_-_LeonardoRamos(001).jpg",
+     "4244 × 2829 px", 6953510],
+    ["Raya de arrecife", "Raya_de_arrecife.jpg",
+     "https://commons.wikimedia.org/wiki/File:Raya_de_arrecife_(Taeniura_lymma),_mar_Rojo,_Egipto,_2023-04-14,_DD_64.jpg",
+     "7465 × 4977 px", 9185309],
+    ["Jupiter", "Jupiter.png",
+     "https://commons.wikimedia.org/wiki/File:Jupiter_accurate_colour.png",
+     "2232 × 2160 px", 2704915],
+    ["Val Montanaia", "Val_Montanaia.jpg",
+     "https://commons.wikimedia.org/wiki/File:Val_Montanaia.jpg",
+     "9557 × 6336 px", 39883726]
+  ];
+  var base = "test/img/";
+  var root = document.getElementById("cmp");
+  var totals = { orig: 0, webp: 0, done: 0 };
+
+  function mb(bytes) { return (bytes / 1048576).toFixed(2) + " MB"; }
+
+  function size(url) {
+    return fetch(url, { method: "HEAD" }).then(function (r) {
+      var n = parseInt(r.headers.get("Content-Length"), 10);
+      return isNaN(n) ? null : n;
+    }).catch(function () { return null; });
+  }
+
+  function figure(label, url) {
+    var fig = document.createElement("figure");
+    var img = document.createElement("img");
+    img.src = url; img.alt = label; img.loading = "lazy";
+    var cap = document.createElement("figcaption");
+    cap.innerHTML = '<span class="sz">…</span><span class="meta"></span>';
+    cap.querySelector(".meta").textContent = label;
+    img.onload = function () {
+      cap.querySelector(".meta").textContent =
+        label + " · " + img.naturalWidth + " × " + img.naturalHeight + " px";
+    };
+    fig.appendChild(img); fig.appendChild(cap);
+    return fig;
+  }
+
+  images.forEach(function (it) {
+    var name = it[1];
+    var orig = base + name;
+    var webp = base + name.replace(/\.[^.]+$/, ".webp");
+    var ext = name.split(".").pop().toUpperCase();
+
+    var row = document.createElement("section");
+    row.className = "cmp-row";
+    var h = document.createElement("h3");
+    h.textContent = it[0];
+    var src = document.createElement("div");
+    src.className = "cmp-source";
+    var a = document.createElement("a");
+    a.href = it[2]; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = "Full-resolution original on Wikimedia Commons";
+    src.appendChild(a);
+    src.appendChild(document.createTextNode(" · " + it[3] + " · " + mb(it[4])));
+
+    var pair = document.createElement("div");
+    pair.className = "cmp-pair";
+    var f1 = figure("Original (" + ext + ", resized)", orig);
+    var f2 = figure("WebP", webp);
+    pair.appendChild(f1); pair.appendChild(f2);
+    var saved = document.createElement("div");
+    saved.className = "cmp-saved";
+    row.appendChild(h); row.appendChild(src); row.appendChild(pair); row.appendChild(saved);
+    root.appendChild(row);
+
+    Promise.all([size(orig), size(webp)]).then(function (s) {
+      f1.querySelector(".sz").textContent = s[0] ? mb(s[0]) : "size unknown";
+      f2.querySelector(".sz").textContent = s[1] ? mb(s[1]) : "size unknown";
+      if (s[0] && s[1]) {
+        saved.textContent = "Saved " + mb(s[0] - s[1]) + " (" + ((1 - s[1] / s[0]) * 100).toFixed(1) + "% smaller)";
+        totals.orig += s[0]; totals.webp += s[1];
+      }
+      totals.done += 1;
+      if (totals.done === images.length && totals.orig) {
+        document.getElementById("cmp-total").textContent =
+          "Total: " + mb(totals.orig) + " → " + mb(totals.webp) +
+          " (" + ((1 - totals.webp / totals.orig) * 100).toFixed(1) + "% smaller)";
+      }
+    });
+  });
+})();
+</script>
+```
