@@ -1,0 +1,6 @@
+{
+  "config": {
+    // README uses long lines; one paragraph per line.
+    "MD013": false
+  }
+}

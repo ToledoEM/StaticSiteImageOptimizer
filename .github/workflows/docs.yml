@@ -1,0 +1,131 @@
+name: Docs site
+
+# Every push to main that touches the site sources spellchecks and lints
+# README.md, builds the test demo (download images, convert with ssio),
+# renders the Quarto site (warnings fail the build) and publishes it to the
+# gh-pages branch (https://toledoem.github.io/StaticSiteImageOptimizer/).
+# Pull requests and manual runs do the checks only, unless `deploy` is ticked.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - _quarto.yml
+      - compare.qmd
+      - img/**
+      - test/**
+      - src/**
+      - ssio
+      - .github/cspell.json
+      - .markdownlint-cli2.jsonc
+      - .github/workflows/docs.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - README.md
+      - _quarto.yml
+      - compare.qmd
+      - img/**
+      - test/**
+      - src/**
+      - ssio
+      - .github/cspell.json
+      - .markdownlint-cli2.jsonc
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Publish the built site to gh-pages"
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: docs-pages
+  cancel-in-progress: false
+
+# Jobs grant their own permissions; nothing by default.
+permissions: {}
+
+jobs:
+  check:
+    name: Spellcheck + lint + strict render
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Spellcheck README
+        uses: streetsidesoftware/cspell-action@ce1816e4ce36532956ac6e983737392774b6e169 # v9.2.0
+        with:
+          config: .github/cspell.json
+          files: README.md
+          incremental_files_only: false
+      - name: Lint README
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
+        with:
+          globs: README.md
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      # test/index.html keeps the originals; test/index_compressed.html points
+      # at the WebP files. Running ssio on test/img converts images only.
+      - name: Build test demo
+        run: |
+          (cd test && ./download_images.sh)
+          ./ssio test/img --quality 85
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
+        with:
+          version: 1.11.9
+      # Quarto has no --strict flag: fail on any warning in the render log.
+      - name: Render site
+        run: |
+          set -o pipefail
+          quarto render 2>&1 | tee render.log
+          if grep -q WARN render.log; then
+            echo "::error::quarto render emitted warnings"
+            exit 1
+          fi
+      - name: Check site output
+        run: |
+          test -f _site/index.html
+          test -f _site/README.html
+          test -f _site/compare.html
+          test -f _site/img/logo_SSIO.png
+          test -f _site/test/index.html
+          test -f _site/test/index_compressed.html
+          test "$(find _site/test/img -name '*.webp' | wc -l)" -eq 4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site
+          path: _site/
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    name: Publish to gh-pages
+    needs: check
+    if: github.event_name == 'push' || inputs.deploy
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: site
+          path: site
+      # One commit, force-pushed: gh-pages holds only the latest build.
+      - name: Push site to gh-pages
+        working-directory: site
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "docs: site for ${SHA::7}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" gh-pages

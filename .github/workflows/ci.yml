@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Lint + smoke test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - name: Shellcheck wrappers
+        run: shellcheck ssio ssio-revert test/download_images.sh
+      - name: CLI help
+        run: |
+          ./ssio --help
+          ./ssio-revert --help
+      - name: Convert and revert a generated site
+        env:
+          SITE: ${{ runner.temp }}/site
+        run: |
+          mkdir -p "$SITE/images"
+          uv run python -c "import sys; from PIL import Image; Image.new('RGB', (100, 50), (73, 109, 137)).save(sys.argv[1])" "$SITE/images/example.jpg"
+          printf '<html><body><img src="images/example.jpg" alt="Demo"></body></html>\n' > "$SITE/index.html"
+          cp "$SITE/index.html" "$RUNNER_TEMP/index.orig.html"
+
+          ./ssio "$SITE" --backup
+          test -f "$SITE/images/example.webp"
+          test -f "$SITE/index.html.bak"
+          grep -q 'images/example.webp' "$SITE/index.html"
+          if grep -q 'example.jpg' "$SITE/index.html"; then exit 1; fi
+
+          ./ssio-revert "$SITE" --remove-webp
+          cmp "$SITE/index.html" "$RUNNER_TEMP/index.orig.html"
+          test ! -e "$SITE/images/example.webp"
+          test ! -e "$SITE/index.html.bak"

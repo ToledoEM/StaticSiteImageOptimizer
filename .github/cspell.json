@@ -1,0 +1,20 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "globRoot": "..",
+  "files": [
+    "README.md"
+  ],
+  "words": [
+    "arrecife",
+    "CMYK",
+    "EXIF",
+    "Montanaia",
+    "Quarto",
+    "Raya",
+    "srcset",
+    "ssio",
+    "venv",
+    "webp"
+  ]
+}
