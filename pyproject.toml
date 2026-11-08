@@ -1,0 +1,22 @@
+[project]
+name = "static-site-image-optimizer"
+version = "0.1.0"
+description = "Convert site images to WebP and update HTML/CSS/JS references"
+requires-python = ">=3.9"
+license = "MIT"
+dependencies = ["Pillow>=9.0.0"]
+
+[project.scripts]
+ssio = "static_site_image_optimizer.cli:main"
+ssio-revert = "static_site_image_optimizer.revert:main"
+
+[dependency-groups]
+dev = ["ruff"]
+
+[tool.ruff]
+target-version = "py39"
+src = ["src"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

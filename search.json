@@ -1,0 +1,72 @@
+[
+  {
+    "objectID": "compare.html",
+    "href": "compare.html",
+    "title": "Original vs WebP",
+    "section": "",
+    "text": "Each row shows a web-sized original (max 1600 px, colour profile kept) next to the WebP that ssio --quality 85 produced. Sizes and dimensions are read from the files the browser downloads. The full-resolution source of each image is linked from Wikimedia Commons.\n\n\nTotal: loading…"
+  },
+  {
+    "objectID": "README.html",
+    "href": "README.html",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "ssio logo\n\n\nRecursively converts images in a directory to WebP and updates references in HTML/CSS/JS files, quickly and safely\nResults at --quality 85:\n\n\n\nImage\nFull-resolution source\nResized original\nWebP\nSaved\n\n\n\n\nEye of the Bird (JPG, ProPhoto RGB)\n6.63 MB\n0.50 MB\n0.21 MB\n58.1%\n\n\nRaya de arrecife (JPG, sRGB)\n8.76 MB\n0.87 MB\n0.44 MB\n49.9%\n\n\nJupiter (PNG)\n2.58 MB\n1.18 MB\n0.06 MB\n94.6%\n\n\nVal Montanaia (JPG, Adobe RGB)\n38.04 MB\n0.63 MB\n0.36 MB\n42.9%\n\n\nTotal\n56.01 MB\n3.18 MB\n1.07 MB\n66.5%\n\n\n\nSaved compares the resized original with its WebP. Sizes are in MiB (1 MB = 1,048,576 bytes), measured with ssio 0.1.0 and Pillow 12. Wide-gamut originals (Adobe RGB, ProPhoto) are colour-converted to sRGB, so the WebP files look the same as the originals in every browser.\n\n\ngit clone https://github.com/ToledoEM/StaticSiteImageOptimizer.git\ncd StaticSiteImageOptimizer\nchmod +x ssio\nRequires uv. The first run creates .venv and installs dependencies.\nTo use ssio globally, add a symlink:\nsudo ln -s $(pwd)/ssio /usr/local/bin/ssio\n\n\n\nConvert all images in a directory to WebP:\n./ssio /path/to/directory\nOr if installed globally:\nssio /path/to/directory\n\n\n\n--quality &lt;0-100&gt; - WebP quality (default: 80)\n--dry-run - Preview changes without making them\n--backup - Create .bak copies of modified files\n--delete-original - Remove original images after conversion\n--extensions &lt;list&gt; - Comma-separated image extensions (default: .jpg,.jpeg,.png,.gif,.bmp,.tiff)\n--include &lt;list&gt; - Comma-separated text file extensions to update (default: .html,.css,.js)\n--log-level &lt;level&gt; - DEBUG, INFO, WARNING, ERROR (default: INFO)\n\n\n\n\nBasic usage:\n./ssio .\nCustom quality with backup:\n./ssio /path/to/site --quality 85 --backup\nDry run mode:\n./ssio . --dry-run\nDelete originals:\n./ssio . --delete-original\nCustom file extensions:\n./ssio . --extensions .jpg,.png --include .html,.css\nComplete example:\n./ssio . --quality 80 --backup --dry-run --log-level DEBUG\n\n\n\n\n\nRecursively scan directories for image files and convert them to WebP\nUpdate references across HTML, CSS, and JS files to use the generated WebP files\nDry-run mode to preview changes\nOptional deletion of original files after successful conversion\nOptional backup of modified files (creates .bak)\nConfigurable quality settings (0-100)\nSupport for multiple image formats (jpg, jpeg, png, gif, bmp, tiff)\nColour-accurate output: embedded ICC profiles (Adobe RGB, ProPhoto, Display P3, CMYK) are converted to sRGB, and EXIF data is kept\n\n\n\n\n\nThe tool replaces references by matching filenames and computing relative paths\nThis is pragmatic and may not cover all edge cases (e.g., dynamic JS templates or complex srcset handling)\nAdd original image formats to .gitignore but keep WebP files tracked\nSafety checks prevent running as root or at filesystem root directories\nUse --backup flag to create .bak files that can be reverted\n\n\n\n\nTo revert changes made by ssio:\n./ssio-revert /path/to/directory\nOptions:\n\n--remove-webp - Also remove .webp files\n--dry-run - Preview what would be reverted\n--extensions &lt;list&gt; - File extensions to revert (default: .html,.css,.js)\n\n\n\n\nTo test the tool with sample data:\ncd test\n./download_images.sh\nuv run test_conversion.py\nThis will convert images in test/img/ and update references in test/index.html without deleting originals.\n\n\n\nThe test/ folder holds a demo page that uses four Wikimedia Commons images as &lt;img&gt; tags, a CSS background-image and a ./ relative path. Each card on the page shows the file size the browser downloaded.\n\nOriginal vs WebP, side by side with the file size under each image\nTest page with original images (JPG/PNG)\nSame page after ssio (WebP)\n\nRun it yourself:\ncd test\n./download_images.sh\n../ssio . --quality 85 --backup\ndownload_images.sh fetches the full-resolution files from Wikimedia Commons and resizes them to web size (max 1600 px on the long side), keeping their colour profiles. ssio then converts every image in test/img/, rewrites the references in test/index.html and saves the original page as test/index.html.bak. Restore it with ../ssio-revert . --remove-webp.\n\n\n\nThis project is licensed under the MIT License - see the LICENSE file for details."
+  },
+  {
+    "objectID": "README.html#installation",
+    "href": "README.html#installation",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "git clone https://github.com/ToledoEM/StaticSiteImageOptimizer.git\ncd StaticSiteImageOptimizer\nchmod +x ssio\nRequires uv. The first run creates .venv and installs dependencies.\nTo use ssio globally, add a symlink:\nsudo ln -s $(pwd)/ssio /usr/local/bin/ssio"
+  },
+  {
+    "objectID": "README.html#usage",
+    "href": "README.html#usage",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "Convert all images in a directory to WebP:\n./ssio /path/to/directory\nOr if installed globally:\nssio /path/to/directory\n\n\n\n--quality &lt;0-100&gt; - WebP quality (default: 80)\n--dry-run - Preview changes without making them\n--backup - Create .bak copies of modified files\n--delete-original - Remove original images after conversion\n--extensions &lt;list&gt; - Comma-separated image extensions (default: .jpg,.jpeg,.png,.gif,.bmp,.tiff)\n--include &lt;list&gt; - Comma-separated text file extensions to update (default: .html,.css,.js)\n--log-level &lt;level&gt; - DEBUG, INFO, WARNING, ERROR (default: INFO)\n\n\n\n\nBasic usage:\n./ssio .\nCustom quality with backup:\n./ssio /path/to/site --quality 85 --backup\nDry run mode:\n./ssio . --dry-run\nDelete originals:\n./ssio . --delete-original\nCustom file extensions:\n./ssio . --extensions .jpg,.png --include .html,.css\nComplete example:\n./ssio . --quality 80 --backup --dry-run --log-level DEBUG"
+  },
+  {
+    "objectID": "README.html#features",
+    "href": "README.html#features",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "Recursively scan directories for image files and convert them to WebP\nUpdate references across HTML, CSS, and JS files to use the generated WebP files\nDry-run mode to preview changes\nOptional deletion of original files after successful conversion\nOptional backup of modified files (creates .bak)\nConfigurable quality settings (0-100)\nSupport for multiple image formats (jpg, jpeg, png, gif, bmp, tiff)\nColour-accurate output: embedded ICC profiles (Adobe RGB, ProPhoto, Display P3, CMYK) are converted to sRGB, and EXIF data is kept"
+  },
+  {
+    "objectID": "README.html#notes",
+    "href": "README.html#notes",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "The tool replaces references by matching filenames and computing relative paths\nThis is pragmatic and may not cover all edge cases (e.g., dynamic JS templates or complex srcset handling)\nAdd original image formats to .gitignore but keep WebP files tracked\nSafety checks prevent running as root or at filesystem root directories\nUse --backup flag to create .bak files that can be reverted"
+  },
+  {
+    "objectID": "README.html#reverting-changes",
+    "href": "README.html#reverting-changes",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "To revert changes made by ssio:\n./ssio-revert /path/to/directory\nOptions:\n\n--remove-webp - Also remove .webp files\n--dry-run - Preview what would be reverted\n--extensions &lt;list&gt; - File extensions to revert (default: .html,.css,.js)"
+  },
+  {
+    "objectID": "README.html#test",
+    "href": "README.html#test",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "To test the tool with sample data:\ncd test\n./download_images.sh\nuv run test_conversion.py\nThis will convert images in test/img/ and update references in test/index.html without deleting originals."
+  },
+  {
+    "objectID": "README.html#complete-example",
+    "href": "README.html#complete-example",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "The test/ folder holds a demo page that uses four Wikimedia Commons images as &lt;img&gt; tags, a CSS background-image and a ./ relative path. Each card on the page shows the file size the browser downloaded.\n\nOriginal vs WebP, side by side with the file size under each image\nTest page with original images (JPG/PNG)\nSame page after ssio (WebP)\n\nRun it yourself:\ncd test\n./download_images.sh\n../ssio . --quality 85 --backup\ndownload_images.sh fetches the full-resolution files from Wikimedia Commons and resizes them to web size (max 1600 px on the long side), keeping their colour profiles. ssio then converts every image in test/img/, rewrites the references in test/index.html and saves the original page as test/index.html.bak. Restore it with ../ssio-revert . --remove-webp."
+  },
+  {
+    "objectID": "README.html#license",
+    "href": "README.html#license",
+    "title": "Static Site Image Optimizer (ssio)",
+    "section": "",
+    "text": "This project is licensed under the MIT License - see the LICENSE file for details."
+  }
+]
